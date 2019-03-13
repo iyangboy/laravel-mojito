@@ -5,20 +5,26 @@ export default {
             // clientSecret: '0amTuj8HL4BlPtUs8StQCNiKnNiPHdMg3qDPgOXa'
             clientSecret: 'BkFGfMt2jpl1W5VamY9ZZwrBozyo8TvLWu9FOBWK'
         },
+        // provider 为 admin 时登录路由名
         loginRouteName: 'adminLogin',
 
+        // provider 为 admin 初始页面路由
         dashboardName: 'adminDashboard',
 
+        // provider 为 admin 初始页面完全路径
         dashboardFullPath: '/admin/dashboard',
 
         appName: {
+            // 项目全名
             fullName: 'Mojito Admin',
+            // 项目缩写名
             abbrName: 'Mojito'
         },
 
         locale: 'en'
     },
 
+    // 支持多表登录时，guard 键值对
     guardNames: [
         {
             label: 'admin',

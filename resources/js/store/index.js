@@ -1,4 +1,4 @@
-import Vue from'vue'
+import Vue from 'vue'
 import Vuex from 'vuex'
 import app from './modules/app'
 import tag from './modules/tag'
@@ -10,14 +10,14 @@ import plugin from './plugin'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
-  modules: {
-    app,
-    menu,
-    permission,
-    login,
-    tag
-  },
-  plugins: [plugin]
+    modules: {
+        app,
+        menu,
+        permission,
+        login,
+        tag
+    },
+    plugins: [plugin]
 })
 
 export default store

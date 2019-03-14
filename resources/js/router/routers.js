@@ -98,6 +98,18 @@ export default [
                     permission: 'menu.index'
                 },
                 component: resolve => void (require(['../views/admin/menu/index.vue'], resolve))
+            },
+            // 用户管理
+            {
+                name: 'accountManagementIndex',
+                path: 'account_management',
+                meta: {
+                    provider: 'admin',
+                    title: 'account_management',
+                    cache: true,
+                    permission: 'account_management.index'
+                },
+                component: resolve => void (require(['../views/admin/account_management/index.vue'], resolve))
             }
         ]
     },

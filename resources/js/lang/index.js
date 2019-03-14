@@ -8,18 +8,18 @@ import zhLocale from './zh_CN'
 Vue.use(VueI18n)
 
 const messages = {
-  en: {
-    ...enLocale,
-    ...elementEnLocale
-  },
-  zh: {
-    ...zhLocale,
-    ...elementZhLocale
-  }
+    en: {
+        ...enLocale,
+        ...elementEnLocale
+    },
+    zh: {
+        ...zhLocale,
+        ...elementZhLocale
+    }
 }
 
 
 export default new VueI18n({
-  locale: 'en',
-  messages
+    locale: 'en',
+    messages
 })

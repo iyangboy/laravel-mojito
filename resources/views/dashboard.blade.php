@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mojito admin</title>
+    <title>语到管理后台</title>
 </head>
 <body>
 <div id="app">

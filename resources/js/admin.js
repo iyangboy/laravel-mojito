@@ -12,7 +12,7 @@ import store from './store'
 import config from './config'
 
 Vue.use(ElementUI, {
-  i18n: (key, value) => i18n.t(key, value)
+    i18n: (key, value) => i18n.t(key, value)
 })
 
 Vue.prototype.$config = config
@@ -21,9 +21,9 @@ i18n.locale = config[Vue.prototype.$provider].locale ? config[Vue.prototype.$pro
 
 /* eslint-disable no-new */
 const app = new Vue({
-  el: '#app',
-  router,
-  store,
-  i18n,
-  render: h => h(App)
+    el: '#app',
+    router,
+    store,
+    i18n,
+    render: h => h(App)
 })

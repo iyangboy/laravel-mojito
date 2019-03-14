@@ -16,12 +16,12 @@ export default {
 
         appName: {
             // 项目全名
-            fullName: 'Mojito Admin',
+            fullName: '语到管理',
             // 项目缩写名
-            abbrName: 'Mojito'
+            abbrName: '语到'
         },
 
-        locale: 'en'
+        locale: 'zh' // en
     },
 
     // 支持多表登录时，guard 键值对

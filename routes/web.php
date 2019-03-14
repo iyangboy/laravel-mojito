@@ -14,3 +14,12 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/test', function () {
+    $data = [
+        1, 2, 3
+    ];
+    return $data;
+});
+
+Route::get('account_management/{id}', 'AccountController@update');

@@ -51,6 +51,10 @@
                         size="mini"
                         @click="handleEditOperation(scope.$index, scope.row)">编辑
                     </el-button>
+                    <el-button
+                        size="mini"
+                        @click="handleRecharge(scope.$index, scope.row)">充值
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -119,6 +123,30 @@
                     <el-button type="primary" @click="handleEditAccountStatus">确 定</el-button>
                     <el-button @click="centerDialogVisible = false">取 消</el-button>
                 </div>
+            </div>
+        </el-dialog>
+
+        <el-dialog
+            title="充值"
+            :visible.sync="rechargeDialogVisible"
+            width="30%"
+            center>
+            <el-form :model="addRechargeForm" :rules="addRechargeRules" ref="addRechargeForm">
+                <el-form-item label="充值金额" prop="money" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model.number="addRechargeForm.money" @keyup.enter.native="handleClickMoney"
+                                  placeholder="请输入金额"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="备注" prop="remarks" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addRechargeForm.remarks" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="rechargeDialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="RechargeSubmit">确 定</el-button>
             </div>
         </el-dialog>
 
@@ -231,6 +259,21 @@
             isPrimaryTime: true,
             isPrimaryFormal: false,
             dialogAddAccountFormVisible: false,
+            rechargeDialogVisible: false,
+            addRechargeForm: {
+                money: '',
+                remarks: '',
+            },
+            addRechargeRules: {
+                money: [
+                    {required: true, message: '金额不能为空'},
+                    {type: 'number', message: '只能输入数字', trigger: 'blur'}
+                ],
+                remarks: [
+                    {required: true, message: '备注不能为空'},
+                    {min: 3, max: 255, message: '字符3~255'}
+                ]
+            },
             addAccountForm: {
                 formal: false,
                 name: '',
@@ -335,13 +378,11 @@
                 }
             },
             handleAddAdminUser() {
+                console.log(this.addAccountForm);
                 this.$refs['addAccountForm'].validate((valid) => {
                     if (valid) {
-                        console.log(this.addAccountForm);
                         console.log(valid);
-                        console.log(2);
                     } else {
-                        console.log(1);
                         return false;
                     }
                 });
@@ -358,6 +399,24 @@
                     name: '',
                     password: '',
                     key: Date.now()
+                });
+            },
+            //充值
+            handleRecharge() {
+                this.rechargeDialogVisible = true;
+            },
+            handleClickMoney() {
+                console.log(this.addRechargeForm.money);
+                this.addRechargeForm.money = this.addRechargeForm.money.replace(/[^\w]/g, '')
+            },
+            RechargeSubmit() {
+                console.log(this.addRechargeForm);
+                this.$refs['addRechargeForm'].validate((valid) => {
+                    if (valid) {
+                        console.log(valid);
+                    } else {
+                        return false;
+                    }
                 });
             }
         },

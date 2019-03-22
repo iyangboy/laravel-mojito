@@ -110,6 +110,18 @@ export default [
                     permission: 'account_management.index'
                 },
                 component: resolve => void (require(['../views/admin/account_management/index.vue'], resolve))
+            },
+            // 数据详情
+            {
+                name: 'statisticsIndex',
+                path: 'statistics',
+                meta: {
+                    provider: 'admin',
+                    title: 'statistics',
+                    cache: true,
+                    permission: 'statistics.index'
+                },
+                component: resolve => void (require(['../views/admin/statistics/index.vue'], resolve))
             }
         ]
     },

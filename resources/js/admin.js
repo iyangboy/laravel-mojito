@@ -1,11 +1,17 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import i18n from './lang'
+import VCharts from 'v-charts'
+import echarts from 'echarts'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/ali-icon/iconfont.css'
 import './assets/ali-icon/ali.css'
 import './assets/css/mojito.css'
 import App from './Admin.vue';
+
+Vue.use(VCharts)
+Vue.use(echarts)
+Vue.prototype.$echarts=echarts
 
 import router from './router'
 import store from './store'

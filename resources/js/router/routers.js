@@ -109,7 +109,20 @@ export default [
                     cache: true,
                     permission: 'account_management.index'
                 },
-                component: resolve => void (require(['../views/admin/account_management/index.vue'], resolve))
+                //component: resolve => void (require(['../views/admin/account_management/index.vue'], resolve))
+                component: resolve => void (require(['../views/admin/account/company.vue'], resolve))
+            },
+            // 用户管理(子集用户)
+            {
+                name: 'accountSubsetIndex',
+                path: 'account_subset',
+                meta: {
+                    provider: 'admin',
+                    title: 'account_subset',
+                    cache: true,
+                    permission: 'account_subset.index'
+                },
+                component: resolve => void (require(['../views/admin/account/subset.vue'], resolve))
             },
             // 数据详情
             {

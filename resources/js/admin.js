@@ -1,4 +1,7 @@
 import Vue from 'vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import ElementUI from 'element-ui'
 import i18n from './lang'
 import VCharts from 'v-charts'
@@ -8,6 +11,12 @@ import './assets/ali-icon/iconfont.css'
 import './assets/ali-icon/ali.css'
 import './assets/css/mojito.css'
 import App from './Admin.vue';
+
+library.add(faCoffee)
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+Vue.config.productionTip = false
 
 Vue.use(VCharts)
 Vue.use(echarts)

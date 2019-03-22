@@ -1,5 +1,19 @@
 <template>
     <div>
+        <el-form :inline="true" :model="queryParams" size="mini">
+            <el-form-item :label="$t('name')">
+                <el-input v-model="queryParams.name"></el-input>
+            </el-form-item>
+            <el-form-item :label="$t('email')">
+                <el-input v-model="queryParams.email"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="requestData" icon="el-icon-search">{{ $t('search') }}</el-button>
+                <el-button type="primary" @click="dialogAddAccountFormVisible = true" icon="el-icon-plus">
+                    {{ $t('add') }}
+                </el-button>
+            </el-form-item>
+        </el-form>
         <el-table
             :data="tableListData"
             v-loading="loading"
@@ -107,6 +121,93 @@
                 </div>
             </div>
         </el-dialog>
+
+        <el-dialog title="新建企业账号" :visible.sync="dialogAddAccountFormVisible" width="30%">
+            <el-form :model="addAccountForm" :rules="addAccountRules" ref="addAccountForm">
+                <el-form-item label="状态" prop="formal" :label-width="formLabelWidth">
+                    <el-switch
+                        v-model="addAccountForm.formal"
+                        active-color="#13ce66"
+                        inactive-color="#ff4949"
+                        active-text="正式账号"
+                        inactive-text="试用账号">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="试用期限" prop="trial_at" :label-width="formLabelWidth">
+                    <el-date-picker
+                        v-model="addAccountForm.trial_at"
+                        type="date"
+                        placeholder="选择日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="账号昵称" prop="name" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addAccountForm.name" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="账号邮箱" prop="email" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addAccountForm.email" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="企业名称" prop="company" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addAccountForm.company" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addAccountForm.phone" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-row>
+
+                </el-row>
+                <div v-for="(account, index) in addAccountForm.accounts">
+                    <el-row :gutter="20" style="border: 1px solid #eee; margin-bottom: 10px;">
+                        <el-col :span="10">
+                            <el-form-item
+                                :label="'子账号' + (index +1)"
+                                :key="account.id"
+                                :prop="'accounts.' + index + '.name'"
+                                :rules="[
+                                { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+                                { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+                                ]"
+                            >
+                                <el-col :span="23">
+                                    <el-input v-model="account.name" placeholder="请输入账号邮箱"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="10">
+                            <el-form-item
+                                :label="'密码' + (index +1)"
+                                :key="account.id"
+                                :prop="'accounts.' + index + '.password'"
+                                :rules="{required:true, message:'密码不能为空', trigger: 'blur'}"
+                            >
+                                <el-col :span="23">
+                                    <el-input type="password" v-model="account.password" placeholder="请输入"></el-input>
+                                </el-col>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-button @click.prevent="removeSubsetAccount(account)" size="mini" style="float: right;">
+                                <i class="el-icon-minus"></i>
+                            </el-button>
+                        </el-col>
+                    </el-row>
+                </div>
+                <div style="text-align: center;">
+                    <el-button @click="addSubsetAccount" size="mini"><i class="el-icon-plus"></i>新增子账号</el-button>
+                </div>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogAddAccountFormVisible = false">{{ $t('cancel') }}</el-button>
+                <el-button type="primary" @click="handleAddAdminUser">{{ $t('confirm') }}</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -129,6 +230,35 @@
             showFormal: false,
             isPrimaryTime: true,
             isPrimaryFormal: false,
+            dialogAddAccountFormVisible: false,
+            addAccountForm: {
+                formal: false,
+                name: '',
+                email: '',
+                company: '',
+                phone: '',
+                trial_at: '',
+                accounts: [
+                    {id: 0, name: '', password: ''}
+                ],
+            },
+            addAccountRules: {
+                name: [
+                    {required: true, message: '昵称不能为空'},
+                    {min: 3, max: 255, message: '字符3~255'}
+                ],
+                email: [
+                    {required: true, message: '邮箱不能为空'},
+                    {type: 'email', message: '请输入正确的邮箱'}
+                ],
+                company: [
+                    {required: true, message: '密码不能为空'},
+                    {min: 3, max: 255, message: '字符3~255'}
+                ],
+                phone: [
+                    {required: true, message: '手机号不能为空'}
+                ],
+            },
         }),
         methods: {
             requestData() {
@@ -203,6 +333,32 @@
                     this.showFormal = true;
                     this.isPrimaryFormal = true;
                 }
+            },
+            handleAddAdminUser() {
+                this.$refs['addAccountForm'].validate((valid) => {
+                    if (valid) {
+                        console.log(this.addAccountForm);
+                        console.log(valid);
+                        console.log(2);
+                    } else {
+                        console.log(1);
+                        return false;
+                    }
+                });
+            },
+            removeSubsetAccount(item) {
+                let index = this.addAccountForm.accounts.indexOf(item);
+                if (index !== -1) {
+                    this.addAccountForm.accounts.splice(index, 1)
+                }
+            },
+            addSubsetAccount() {
+                this.addAccountForm.accounts.push({
+                    id: '',
+                    name: '',
+                    password: '',
+                    key: Date.now()
+                });
             }
         },
         computed: {},

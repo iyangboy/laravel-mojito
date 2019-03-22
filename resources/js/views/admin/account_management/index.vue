@@ -33,6 +33,10 @@
                         size="mini"
                         @click="handleEditStatus(scope.$index, scope.row)">转正
                     </el-button>
+                    <el-button
+                        size="mini"
+                        @click="handleEditOperation(scope.$index, scope.row)">编辑
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -64,6 +68,45 @@
                 <el-button @click="dialogEditFormVisible = false">关 闭</el-button>
             </div>
         </el-dialog>
+
+        <el-dialog title="试用期续费" :visible.sync="centerDialogVisible" width="30%" center>
+            <div style="text-align: center;margin-bottom: 20px;">
+                <el-button @click="choiceOperation(1)" :class="{ 'el-button--primary': isPrimaryTime }">补充时长</el-button>
+                <el-button @click="choiceOperation(2)" :class="{ 'el-button--primary': isPrimaryFormal }">转为正式用户
+                </el-button>
+            </div>
+            <div v-if="showDueTime">
+                <div style="margin-bottom: 20px;text-align: center;">
+                    到期时间：
+                    <el-date-picker v-model="value1" type="date" placeholder="选择日期">
+                    </el-date-picker>
+                </div>
+                <div slot="footer" class="dialog-footer" style="text-align: center;">
+                    <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+                    <el-button @click="centerDialogVisible = false">取 消</el-button>
+                </div>
+            </div>
+            <div v-if="showFormal">
+                <div :model="showEdit" style="text-align: center;">
+                    <div>
+                        <p><b>账号：</b><span>{{ showEdit.permission_name }}</span></p>
+                    </div>
+                    <div>
+                        <p><b>企业名称：</b><span>{{ showEdit.permission_name }}</span></p>
+                    </div>
+                    <div>
+                        <p><b>联系方式：</b><span>{{ showEdit.mobile }}</span></p>
+                    </div>
+                    <div>
+                        <p><b>将转为正式企业用户，使用时间将不受限制，确定么？</b></p>
+                    </div>
+                </div>
+                <div slot="footer" class="dialog-footer" style="text-align: center;">
+                    <el-button type="primary" @click="handleEditAccountStatus">确 定</el-button>
+                    <el-button @click="centerDialogVisible = false">取 消</el-button>
+                </div>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -79,6 +122,13 @@
             ...tableDefaultData(),
             tableListData: [],
             showEdit: {},
+            showOperation: {},
+            centerDialogVisible: false,
+            value1: '',
+            showDueTime: true,
+            showFormal: false,
+            isPrimaryTime: true,
+            isPrimaryFormal: false,
         }),
         methods: {
             requestData() {
@@ -130,6 +180,29 @@
                     this.dialogEditFormVisible = false;
                     this.requestData()
                 })
+            },
+            // 操作
+            handleEditOperation(index, row) {
+                console.log(1);
+                this.showEdit = row;
+                this.centerDialogVisible = true
+            },
+            //
+            handleEditOperationFormVisible() {
+
+            },
+            choiceOperation(show) {
+                if (1 == show) {
+                    this.showFormal = false;
+                    this.isPrimaryFormal = false;
+                    this.showDueTime = true;
+                    this.isPrimaryTime = true;
+                } else {
+                    this.showDueTime = false;
+                    this.isPrimaryTime = false;
+                    this.showFormal = true;
+                    this.isPrimaryFormal = true;
+                }
             }
         },
         computed: {},

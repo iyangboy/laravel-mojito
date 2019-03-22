@@ -27,5 +27,9 @@
         "vue-router": "^3.0.1",
         "vue-template-compiler": "^2.6.8",
         "vuex": "^3.0.1"
+    },
+    "dependencies": {
+        "echarts": "^4.2.1",
+        "v-charts": "^1.19.0"
     }
 }

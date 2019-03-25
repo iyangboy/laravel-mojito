@@ -11,7 +11,12 @@ class Account extends Model
     protected $table = 'account';
 
     protected $fillable = [
-        'status',
+        'permission_name','sub_account_num','mobile','count','status','type','trial_at',
+        'company','email','formal'
     ];
 
+    public function accountSubset()
+    {
+        return $this->hasMany(AccountSubset::class, 'company_id', 'id');
+    }
 }

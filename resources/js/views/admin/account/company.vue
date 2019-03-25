@@ -2,7 +2,7 @@
     <div>
         <el-form :inline="true" :model="queryParams" size="mini">
             <el-form-item :label="$t('name')">
-                <el-input v-model="queryParams.name"></el-input>
+                <el-input v-model="queryParams.company"></el-input>
             </el-form-item>
             <el-form-item :label="$t('email')">
                 <el-input v-model="queryParams.email"></el-input>
@@ -20,8 +20,12 @@
             border stripe
             class="init_table">
             <el-table-column
-                prop="permission_name"
+                prop="company"
                 label="企业名称">
+            </el-table-column>
+            <el-table-column
+                prop="email"
+                label="邮箱">
             </el-table-column>
             <el-table-column
                 prop="sub_account_num"
@@ -30,6 +34,24 @@
             <el-table-column
                 prop="mobile"
                 label="联系方式">
+            </el-table-column>
+            <el-table-column
+                prop="formal"
+                label="状态">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.formal">
+                        <el-tag size="mini">正式</el-tag>
+                    </div>
+                    <div v-else>
+                        <el-tag size="mini" type="danger">试用</el-tag>
+                        <br>{{ scope.row.trial_at }}
+                        <br>
+                        <el-tag
+                            v-if="scope.row.trial_at <= toDay"
+                            size="mini" type="danger">已停用
+                        </el-tag>
+                    </div>
+                </template>
             </el-table-column>
             <el-table-column
                 prop="count"
@@ -43,13 +65,29 @@
                 align="center"
                 :label="$t('actions')">
                 <template slot-scope="scope">
+                    <router-link :to="{ name: 'accountSubsetIndex', params: {id: scope.row.id}}">
+                        <el-button
+                            size="mini">账户
+                        </el-button>
+                    </router-link>
                     <el-button
+                        size="mini"
+                        @click="handleEdit(scope.$index, scope.row)">编辑
+                    </el-button>
+                    <el-button
+                        v-if="scope.row.formal"
+                        size="mini"
+                        @click="handleAddSubset(scope.$index, scope.row)">添加子账户
+                    </el-button>
+                    <el-button
+                        v-if="!scope.row.formal"
                         size="mini"
                         @click="handleEditStatus(scope.$index, scope.row)">转正
                     </el-button>
                     <el-button
+                        v-if="!scope.row.formal"
                         size="mini"
-                        @click="handleEditOperation(scope.$index, scope.row)">编辑
+                        @click="handleEditOperation(scope.$index, scope.row)">添加时长
                     </el-button>
                     <el-button
                         size="mini"
@@ -68,7 +106,7 @@
 
         <el-dialog title="转为正式用户" :visible.sync="dialogEditFormVisible" width="30%" align='center'>
             <div :model="showEdit" ref="showEdit">
-                <div>
+                <!--<div>
                     <p><b>账号：</b><span>{{ showEdit.permission_name }}</span></p>
                 </div>
                 <div>
@@ -76,31 +114,42 @@
                 </div>
                 <div>
                     <p><b>联系方式：</b><span>{{ showEdit.mobile }}</span></p>
-                </div>
+                </div>-->
                 <div>
                     <p><b>将转为正式企业用户，使用时间将不受限制，确定么？</b></p>
                 </div>
             </div>
             <div slot="footer" class="dialog-footer" align='center'>
-                <el-button type="primary" @click="handleEditAccountStatus">转 正</el-button>
+                <el-button type="primary" @click="handleAccountFormal">转 正</el-button>
                 <el-button @click="dialogEditFormVisible = false">关 闭</el-button>
             </div>
         </el-dialog>
 
         <el-dialog title="试用期续费" :visible.sync="centerDialogVisible" width="30%" center>
             <div style="text-align: center;margin-bottom: 20px;">
-                <el-button @click="choiceOperation(1)" :class="{ 'el-button--primary': isPrimaryTime }">补充时长</el-button>
-                <el-button @click="choiceOperation(2)" :class="{ 'el-button--primary': isPrimaryFormal }">转为正式用户
-                </el-button>
+                <!--<el-button @click="choiceOperation(1)" :class="{ 'el-button&#45;&#45;primary': isPrimaryTime }">补充时长</el-button>-->
+                <!--<el-button @click="choiceOperation(2)" :class="{ 'el-button&#45;&#45;primary': isPrimaryFormal }">转为正式用户-->
+                <!--</el-button>-->
             </div>
             <div v-if="showDueTime">
-                <div style="margin-bottom: 20px;text-align: center;">
-                    到期时间：
-                    <el-date-picker v-model="value1" type="date" placeholder="选择日期">
-                    </el-date-picker>
-                </div>
+                <el-form :model="editTrialAt" :rules="editTrialAtRules" ref="editTrialAt" label-width="100px"
+                         class="demo-dynamic">
+                    <div style="margin-bottom: 20px;text-align: center;">
+                        <el-form-item label="到期时间" prop="trial_at">
+                            <el-date-picker v-model="editTrialAt.trial_at" type="date"
+                                            prop="trial_at"
+                                            format="yyyy 年 MM 月 dd 日"
+                                            value-format="yyyy-MM-dd"
+                                            placeholder="选择日期"
+                            >
+                            </el-date-picker>
+                        </el-form-item>
+                    </div>
+                    <el-form-item>
+                    </el-form-item>
+                </el-form>
                 <div slot="footer" class="dialog-footer" style="text-align: center;">
-                    <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+                    <el-button type="primary" @click="editAccountTrialAt">确 定</el-button>
                     <el-button @click="centerDialogVisible = false">取 消</el-button>
                 </div>
             </div>
@@ -120,7 +169,7 @@
                     </div>
                 </div>
                 <div slot="footer" class="dialog-footer" style="text-align: center;">
-                    <el-button type="primary" @click="handleEditAccountStatus">确 定</el-button>
+                    <el-button type="primary" @click="handleAccountFormal">确 定</el-button>
                     <el-button @click="centerDialogVisible = false">取 消</el-button>
                 </div>
             </div>
@@ -141,8 +190,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="rechargeDialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="RechargeSubmit">确 定</el-button>
+                <el-button @click="rechargeDialogVisible = false">取 消</el-button>
             </div>
         </el-dialog>
 
@@ -161,6 +210,8 @@
                     <el-date-picker
                         v-model="addAccountForm.trial_at"
                         type="date"
+                        format="yyyy 年 MM 月 dd 日"
+                        value-format="yyyy-MM-dd"
                         placeholder="选择日期">
                     </el-date-picker>
                 </el-form-item>
@@ -232,11 +283,59 @@
                 <el-button type="primary" @click="handleAddAdminUser">{{ $t('confirm') }}</el-button>
             </div>
         </el-dialog>
+
+        <el-dialog title="编辑公司信息" :visible.sync="dialogEdit" width="30%">
+            <el-form :model="editCompanyForm" :rules="editCompanyFormRules" ref="editCompanyForm">
+                <el-form-item label="状态" prop="formal" :label-width="formLabelWidth">
+                    <el-switch
+                        v-model="editCompanyForm.formal"
+                        active-color="#13ce66"
+                        inactive-color="#ff4949"
+                        active-text="正式账号"
+                        inactive-text="试用账号">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="试用期限" prop="trial_at" :label-width="formLabelWidth">
+                    <el-date-picker
+                        v-model="editCompanyForm.trial_at"
+                        type="date"
+                        format="yyyy 年 MM 月 dd 日"
+                        value-format="yyyy-MM-dd"
+                        placeholder="选择日期">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="账号邮箱" prop="email" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="editCompanyForm.email" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="企业名称" prop="company" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="editCompanyForm.company" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="editCompanyForm.mobile" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogEdit = false">{{ $t('cancel') }}</el-button>
+                <el-button type="primary" @click="editCompany">{{ $t('confirm') }}</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
-    import {getDataList, editAccountStatus} from '../../../api/accountManagement'
+    import {
+        getDataList,
+        editAccount,
+        addAccount,
+        editAccountStatus,
+        editAccountFormal
+    } from '../../../api/accountManagement'
     import {tableDefaultData} from '../../../libs/tableDataHandle'
 
     export default {
@@ -244,9 +343,41 @@
         components: {},
         data: () => ({
             ...tableDefaultData(),
+            toDay: '',
+            trialAt: '',
             tableListData: [],
             showEdit: {},
             showOperation: {},
+            dialogAddSubsetForm: false,
+            addSubset: {
+
+            },
+            dialogEdit: false,
+            editCompanyForm: {
+                formal: false,
+                name: '',
+                email: '',
+                company: '',
+                phone: '',
+                trial_at: '',
+            },
+            editCompanyFormRules: {
+                name: [
+                    {required: true, message: '昵称不能为空'},
+                    {min: 3, max: 255, message: '字符3~255'}
+                ],
+                email: [
+                    {required: true, message: '邮箱不能为空'},
+                    {type: 'email', message: '请输入正确的邮箱'}
+                ],
+                company: [
+                    {required: true, message: '企业名称不能为空'},
+                    {min: 3, max: 255, message: '字符3~255'}
+                ],
+                mobile: [
+                    {required: true, message: '手机号不能为空'}
+                ],
+            },
             centerDialogVisible: false,
             value1: '',
             showDueTime: true,
@@ -290,19 +421,27 @@
                     {type: 'email', message: '请输入正确的邮箱'}
                 ],
                 company: [
-                    {required: true, message: '密码不能为空'},
+                    {required: true, message: '企业名称不能为空'},
                     {min: 3, max: 255, message: '字符3~255'}
                 ],
                 phone: [
                     {required: true, message: '手机号不能为空'}
                 ],
             },
+            editTrialAt: {
+                trial_at: '',
+            },
+            editTrialAtRules: {
+                trial_at: [
+                    {required: true, message: '时间不能为空'}
+                ]
+            },
         }),
         methods: {
             requestData() {
                 this.loading = true
                 getDataList({...this.queryParams, page: this.pagination.currentPage}).then(response => {
-                    console.log(response.data)
+                    console.log(response.data);
                     // this.tableListData = this.formatConversion([], response.data.data)
                     // responseDataFormat(response, this);
                     this.tableListData = response.data.data;
@@ -318,6 +457,58 @@
                     this.loading = false
                 })
             },
+            // 添加子账户
+            handleAddSubset(index, row) {
+                this.nowRowData = {index, row};
+                this.showEdit = row;
+                this.dialogAddSubsetForm = true
+            },
+            // 编辑
+            handleEdit(index, row) {
+                //console.log(index);
+                //console.log(row.formal);
+                this.nowRowData = {index, row};
+                this.showEdit = row;
+                this.editCompanyForm = {...row};
+                this.editCompanyForm.formal = Boolean(row.formal);
+                this.dialogEdit = true
+            },
+            editCompany() {
+                let data = {};
+                //console.log(data);
+                data.company = this.editCompanyForm.company;
+                data.email = this.editCompanyForm.email;
+                data.mobile = this.editCompanyForm.mobile;
+                data.trial_at = this.editCompanyForm.trial_at;
+                console.log(this.editCompanyForm.formal);
+                data.formal = this.editCompanyForm.formal ? 1 : 0;
+                console.log(data.formal);
+                this.$refs['editCompanyForm'].validate((valid) => {
+                    if (valid) {
+                        //console.log(data);
+                        editAccount(this.nowRowData.row.id, data).then(response => {
+                            console.log(response);
+                            let status = response.data;
+                            if (status) {
+                                this.$notify({
+                                    title: '成功',
+                                    message: '转正成功',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.$notify.error({
+                                    title: '错误',
+                                    message: '操作有误'
+                                });
+                            }
+                            this.dialogEdit = false;
+                            this.requestData();
+                        })
+                    } else {
+                        return false;
+                    }
+                });
+            },
             handleEditStatus(index, row) {
                 //console.log(index)
                 //console.log(row)
@@ -326,6 +517,57 @@
                 this.showEdit = row;
                 console.log(this.showEdit);
                 this.dialogEditFormVisible = true
+            },
+            handleAccountFormal() {
+                editAccountFormal(this.nowRowData.row.id, {formal: 1}).then(response => {
+                    //console.log(response);
+                    let status = response.data;
+                    if (status) {
+                        this.$notify({
+                            title: '成功',
+                            message: '转正成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$notify.error({
+                            title: '错误',
+                            message: '操作有误'
+                        });
+                    }
+                    this.dialogEditFormVisible = false;
+                    this.requestData()
+                })
+            },
+            editAccountTrialAt() {
+                //console.log(this.nowRowData.row.id);
+                //console.log(this.editTrialAt.trial_at);
+                let trial_at = {trial_at: this.editTrialAt.trial_at};
+                this.$refs['editTrialAt'].validate((valid) => {
+                    if (valid) {
+                        //console.log(valid);
+                        editAccount(this.nowRowData.row.id, trial_at).then(response => {
+                            //console.log(response);
+                            let status = response.data;
+                            if (status) {
+                                this.$notify({
+                                    title: '成功',
+                                    message: '添加时间成功',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.$notify.error({
+                                    title: '错误',
+                                    message: '操作有误'
+                                });
+                            }
+                            this.editTrialAt.trial_at = '';
+                            this.centerDialogVisible = false;
+                            this.requestData();
+                        })
+                    } else {
+                        return false;
+                    }
+                });
             },
             handleEditAccountStatus() {
                 //console.log(this.nowRowData.row.id);
@@ -352,6 +594,7 @@
             // 操作
             handleEditOperation(index, row) {
                 console.log(1);
+                this.nowRowData = {index, row}
                 this.showEdit = row;
                 this.centerDialogVisible = true
             },
@@ -373,10 +616,28 @@
                 }
             },
             handleAddAdminUser() {
-                console.log(this.addAccountForm);
+                // console.log(this.addAccountForm);
                 this.$refs['addAccountForm'].validate((valid) => {
                     if (valid) {
                         console.log(valid);
+                        addAccount(this.addAccountForm).then(response => {
+                            //console.log(response);
+                            let status = response.data;
+                            if (status) {
+                                this.$notify({
+                                    title: '成功',
+                                    message: '操作成功',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.$notify.error({
+                                    title: '错误',
+                                    message: '操作有误'
+                                });
+                            }
+                            this.dialogAddAccountFormVisible = false;
+                            this.requestData();
+                        });
                     } else {
                         return false;
                     }
@@ -413,12 +674,27 @@
                         return false;
                     }
                 });
-            }
+            },
+            getNowFormatDate() {
+                let date = new Date();
+                let year = date.getFullYear();
+                let month = date.getMonth() + 1;
+                let strDate = date.getDate();
+                if (month >= 1 && month <= 9) {
+                    month = "0" + month;
+                }
+                if (strDate >= 0 && strDate <= 9) {
+                    strDate = "0" + strDate;
+                }
+                this.toDay = year + '-' + month + '-' + strDate;
+                //console.log(this.toDay)
+                //return currentdate;
+            },
         },
         computed: {},
         created() {
-            console.log(123);
-            this.requestData()
+            this.requestData();
+            this.getNowFormatDate();
         }
     }
 </script>

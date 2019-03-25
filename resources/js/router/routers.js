@@ -124,6 +124,18 @@ export default [
                 },
                 component: resolve => void (require(['../views/admin/account/subset.vue'], resolve))
             },
+            {
+                name: 'accountSubsetIndex',
+                //path: 'account_subset',
+                path: 'account_subset/:id/company',
+                meta: {
+                    provider: 'admin',
+                    title: 'account_subset',
+                    cache: true,
+                    permission: 'account_subset.index'
+                },
+                component: resolve => void (require(['../views/admin/account/subset.vue'], resolve))
+            },
             // 数据详情
             {
                 name: 'statisticsIndex',

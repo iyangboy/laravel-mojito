@@ -21,12 +21,40 @@ class AccountSubsetController extends Controller
         return $subset;
     }
 
+    // 创建子账户
+    public function store(Request $request)
+    {
+        $account = AccountSubset::create($request->all());
+        return $account->id;
+    }
+
     // 编辑
     public function update(Request $request, $id)
     {
-        $account = Account::find($id);
+        $account = AccountSubset::find($id);
         $account->update($request->all());
-        return 1;
+        return $account->id;
     }
 
+    // 删除
+    public function destroy($id)
+    {
+        $account = AccountSubset::find($id);
+
+        $account->delete();
+
+        return $account->id;
+    }
+
+    // 密码验证
+    public function passwordValidate(Request $request)
+    {
+        $id = $request->id;
+        $password = $request->password;
+        $account = AccountSubset::find($id);
+        if ($password == $account->password) {
+            return 1;
+        }
+        return 0;
+    }
 }

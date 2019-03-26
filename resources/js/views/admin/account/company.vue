@@ -65,7 +65,7 @@
                 align="center"
                 :label="$t('actions')">
                 <template slot-scope="scope">
-                    <router-link :to="{ name: 'accountSubsetIndex', params: {id: scope.row.id}}">
+                    <router-link :to="{ name: 'companyAccountSubsetIndex', params: {id: scope.row.id}}">
                         <el-button
                             size="mini">账户
                         </el-button>
@@ -314,7 +314,7 @@
                         <el-input v-model="editCompanyForm.company" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
+                <el-form-item label="联系方式" prop="mobile" :label-width="formLabelWidth">
                     <el-col :span="12">
                         <el-input v-model="editCompanyForm.mobile" placeholder="请输入"></el-input>
                     </el-col>

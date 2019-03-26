@@ -23,6 +23,7 @@ Route::namespace('\App\Http\Controllers')
         $router->resource('account_management', 'AccountController', ['only' =>
             ['index', 'show', 'store', 'update', 'destroy']
         ]);
+        $router->get('account_subset/password_validate', 'AccountSubsetController@passwordValidate');
         $router->get('account_subset/{company_id}/company', 'AccountSubsetController@companySubset');
         $router->resource('account_subset', 'AccountSubsetController', ['only' =>
             ['index', 'show', 'store', 'update', 'destroy']

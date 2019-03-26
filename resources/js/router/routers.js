@@ -125,7 +125,7 @@ export default [
                 component: resolve => void (require(['../views/admin/account/subset.vue'], resolve))
             },
             {
-                name: 'accountSubsetIndex',
+                name: 'companyAccountSubsetIndex',
                 //path: 'account_subset',
                 path: 'account_subset/:id/company',
                 meta: {

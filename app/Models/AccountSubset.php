@@ -11,7 +11,7 @@ class AccountSubset extends Model
     protected $table = 'account_subset';
 
     protected $fillable = [
-        'company_id', 'name', 'email', 'password'
+        'company_id', 'name', 'email', 'mobile', 'password'
     ];
 
 

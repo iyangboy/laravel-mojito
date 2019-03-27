@@ -2,7 +2,7 @@
     <div>
         数据详情
         <div style="width: 500px;">
-            <h3>文本翻译长度分布</h3>
+            <h3>文本翻译长度分布123</h3>
             <ve-histogram :data="chartData"></ve-histogram>
         </div>
     </div>

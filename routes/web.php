@@ -17,13 +17,10 @@ Route::get('/', function () {
 });
 
 Route::get('/test1', function () {
-    //return 1;
-    $member = \App\Models\Member::with(['company'])->find(1);
-    dd($member->toArray());
-    return $member;
+    dd(config('mojito.super_admin.auth'));
 });
 
-Route::get('/test', 'AccountSubsetController@companySubset');
+Route::get('/test', 'member\CompanyAccountController@index');
 
 Route::get('account_management/{id}', 'AccountController@update');
 

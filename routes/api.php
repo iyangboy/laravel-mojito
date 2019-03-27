@@ -29,3 +29,12 @@ Route::namespace('\App\Http\Controllers')
             ['index', 'show', 'store', 'update', 'destroy']
         ]);
     });
+
+Route::namespace('\App\Http\Controllers\Member')
+    ->middleware(["auth:member", 'mojito.permission'])
+    ->group(function ($router) {
+        $router->get('member/company_account/password_validate', 'AccountSubsetController@passwordValidate');
+        $router->resource('member/company_account', 'CompanyAccountController', ['only' =>
+            ['index', 'show', 'store', 'update', 'destroy']
+        ]);
+    });

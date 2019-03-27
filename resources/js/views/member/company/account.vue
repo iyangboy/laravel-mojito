@@ -9,7 +9,7 @@
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="requestData" icon="el-icon-search">{{ $t('search') }}</el-button>
-                <el-button v-if="isCompany" type="primary" @click="dialogAddAccountForm = true" icon="el-icon-plus">
+                <el-button type="primary" @click="dialogAddAccountForm = true" icon="el-icon-plus">
                     {{ $t('add') }}
                 </el-button>
             </el-form-item>
@@ -172,13 +172,14 @@
 
 <script>
     import {
+        deleteAccount,
+    } from '../../../api/account/subset'
+    import {
         getDataList,
         postAddAccount,
-        getDataCompanyList,
         editAccountData,
-        deleteAccount,
-        getPasswordValidate
-    } from '../../../api/account/subset'
+        getPasswordValidate,
+    } from '../../../api/member/company/account'
     import {tableDefaultData} from '../../../libs/tableDataHandle'
 
     export default {
@@ -287,62 +288,38 @@
         methods: {
             requestData() {
                 this.loading = true;
-                console.log(123);
-                console.log(this.$route.params.id);
-                if (this.$route.params.id) {
-                    this.isCompany = true;
-                    getDataCompanyList(this.$route.params.id, {
-                        ...this.queryParams,
-                        page: this.pagination.currentPage
-                    }).then(response => {
-                        console.log(response.data);
-                        this.tableListData = response.data.data;
-                        let meta = response.data
-                        this.pagination = {
-                            currentPage: meta.current_page,
-                            pageSize: meta.per_page,
-                            total: meta.total,
-                            from: meta.from,
-                            lastPage: meta.last_page,
-                            to: meta.to
-                        }
-                        this.loading = false
-                    })
-                } else {
-                    getDataList({
-                        ...this.queryParams,
-                        page: this.pagination.currentPage
-                    }).then(response => {
-                        console.log(response.data);
-                        this.tableListData = response.data.data;
-                        let meta = response.data
-                        this.pagination = {
-                            currentPage: meta.current_page,
-                            pageSize: meta.per_page,
-                            total: meta.total,
-                            from: meta.from,
-                            lastPage: meta.last_page,
-                            to: meta.to
-                        }
-                        this.loading = false
-                    })
-                }
-
+                getDataList({
+                    ...this.queryParams,
+                    page: this.pagination.currentPage
+                }).then(response => {
+                    console.log(response.data);
+                    this.tableListData = response.data.data;
+                    let meta = response.data
+                    this.pagination = {
+                        currentPage: meta.current_page,
+                        pageSize: meta.per_page,
+                        total: meta.total,
+                        from: meta.from,
+                        lastPage: meta.last_page,
+                        to: meta.to
+                    }
+                    this.loading = false
+                })
+                return false;
             },
             // 添加子账户
             addAccount() {
                 let data = {};
-                data.company_id = this.$route.params.id;
                 data.email = this.addAccountForm.email;
                 data.password = this.addAccountForm.password;
                 data.name = this.addAccountForm.name;
                 data.mobile = this.addAccountForm.mobile;
-                // console.log(data);
+                //console.log(data);
                 this.$refs['addAccountForm'].validate((valid) => {
                     if (valid) {
                         // console.log(1);
                         postAddAccount(data).then(response => {
-                            // console.log(response);
+                            console.log(response);
                             if (response.data) {
                                 this.$notify({
                                     title: '成功',
@@ -386,9 +363,9 @@
                 console.log(data);
                 this.$refs['editAccountForm'].validate((valid) => {
                     if (valid) {
-                        console.log(1);
+                        //console.log(1);
                         editAccountData(this.nowRowData.row.id, data).then(response => {
-                            console.log(response);
+                            //console.log(response);
                             let status = response.data;
                             if (status) {
                                 this.$notify({
@@ -458,8 +435,8 @@
                                     message: '操作有误'
                                 });
                             }
-                            this.dialogPassword = false;
-                            this.requestData();
+                            //this.dialogPassword = false;
+                            //this.requestData();
                         })
                     } else {
                         console.log(2);
@@ -501,7 +478,6 @@
         },
         computed: {},
         created() {
-            console.log(111);
             this.requestData()
         },
         activated() {

@@ -200,6 +200,18 @@ export default [
                 },
                 component: resolve => void (require(['../views/member/company/company.vue'], resolve))
             },
+            // 账号信息
+            {
+                name: 'CompanyAccountIndex',
+                path: 'company_account',
+                meta: {
+                    provider: 'member',
+                    title: 'CompanyAccountIndex',
+                    cache: true,
+                    permission: 'company.index'
+                },
+                component: resolve => void (require(['../views/member/company/account.vue'], resolve))
+            },
         ]
     },
     {

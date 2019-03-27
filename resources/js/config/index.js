@@ -23,12 +23,35 @@ export default {
 
         locale: 'zh' // en
     },
+    member: {
+        authorize: {
+            clientId: 2,
+            //clientSecret: 'dEs0q7oFWeTNkzwBImi6FFZpPGqszeTWcFrKXjXD'
+            clientSecret: 'BkFGfMt2jpl1W5VamY9ZZwrBozyo8TvLWu9FOBWK'
+        },
+        loginRouteName: 'memberLogin',
+
+        dashboardName: 'memberDashboard',
+
+        dashboardFullPath: '/member/dashboard',
+
+        appName: {
+            fullName: '语到企业',
+            abbrName: '语到'
+        },
+
+        locale: 'zh'
+    },
 
     // 支持多表登录时，guard 键值对
     guardNames: [
         {
             label: 'admin',
             value: 'admin'
+        },
+        {
+            label: 'member',
+            value: 'member'
         }
     ],
 

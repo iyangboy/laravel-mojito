@@ -50,6 +50,11 @@ return [
             'driver' => 'passport',
             'provider' => 'admin'
         ],
+
+        'member' => [
+            'driver' => 'passport',
+            'provider' => 'member'
+        ],
     ],
 
     /*
@@ -78,6 +83,11 @@ return [
         'admin' => [
             'driver' => 'eloquent',
             'model' => \Moell\Mojito\Models\AdminUser::class,
+        ],
+
+        'member' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Member::class,
         ],
 
         // 'users' => [

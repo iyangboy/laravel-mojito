@@ -499,6 +499,9 @@
         },
         computed: {},
         created() {
+            //this.requestData()
+        },
+        activated() {
             this.requestData()
         }
     }

@@ -105,7 +105,7 @@ export default [
                 path: 'account_management',
                 meta: {
                     provider: 'admin',
-                    title: 'account_management',
+                    title: 'accountManagement',
                     cache: true,
                     permission: 'account_management.index'
                 },
@@ -118,7 +118,7 @@ export default [
                 path: 'account_subset',
                 meta: {
                     provider: 'admin',
-                    title: 'account_subset',
+                    title: 'accountSubset',
                     cache: true,
                     permission: 'account_subset.index'
                 },
@@ -130,7 +130,7 @@ export default [
                 path: 'account_subset/:id/company',
                 meta: {
                     provider: 'admin',
-                    title: 'account_subset',
+                    title: 'companyAccountSubset',
                     cache: true,
                     permission: 'account_subset.index'
                 },
@@ -140,6 +140,18 @@ export default [
             {
                 name: 'statisticsIndex',
                 path: 'statistics',
+                meta: {
+                    // provider: 'admin',
+                    title: 'statistics',
+                    cache: true,
+                    permission: 'statistics.index'
+                },
+                component: resolve => void (require(['../views/admin/statistics/index.vue'], resolve))
+            },
+            // 账号信息
+            {
+                name: 'companyAccountIndex',
+                path: 'company/account',
                 meta: {
                     provider: 'admin',
                     title: 'statistics',
@@ -154,5 +166,45 @@ export default [
         name: 'adminLogin',
         path: '/admin/login',
         component: resolve => void (require(['../views/admin/login/index.vue'], resolve))
-    }
+    },
+    {
+        name: 'memberMain',
+        path: '/member',
+        redirect: '/member/dashboard',
+        meta: {
+            provider: 'member',
+            title: 'home',
+        },
+        component: Admin,
+        children: [
+            {
+                name: 'memberDashboard',
+                path: 'dashboard',
+                meta: {
+                    provider: 'member',
+                    title: 'dashboard',
+                    cache: true,
+                    notClosable: true
+                },
+                component: resolve => void (require(['../views/member/dashboard/index.vue'], resolve))
+            },
+            // 企业信息
+            {
+                name: 'CompanyIndex',
+                path: 'company',
+                meta: {
+                    provider: 'member',
+                    title: 'CompanyIndex',
+                    cache: true,
+                    permission: 'company.index'
+                },
+                component: resolve => void (require(['../views/member/company/company.vue'], resolve))
+            },
+        ]
+    },
+    {
+        name: 'memberLogin',
+        path: '/member/login',
+        component: resolve => void (require(['../views/member/login/index.vue'], resolve))
+    },
 ]

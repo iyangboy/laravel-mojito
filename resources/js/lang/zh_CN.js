@@ -1,7 +1,7 @@
 export default {
     meta: {
         title: {
-            dashboard: 'Dashboard',
+            dashboard: '首页',
             adminUser: '管理员用户',
             home: '首页',
             role: '角色',
@@ -9,6 +9,9 @@ export default {
             permissionGroup: '权限组',
             menu: '菜单',
             roleAssignPermission: '角色分配权限',
+            accountManagement: '企业列表',
+            accountSubset: '所有账户',
+            companyAccountSubset: '企业子账户',
         }
     },
     closeButton: {

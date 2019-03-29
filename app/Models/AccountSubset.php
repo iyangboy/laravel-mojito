@@ -17,6 +17,6 @@ class AccountSubset extends Model
 
     public function company()
     {
-        return $this->belongsTo(Account::class, 'company_id', 'id');
+        return $this->belongsTo(Company::class, 'company_id', 'id');
     }
 }

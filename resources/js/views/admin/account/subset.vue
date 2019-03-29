@@ -20,7 +20,7 @@
             border stripe
             class="init_table">
             <el-table-column
-                prop="company.company"
+                prop="company.company_name"
                 label="企业名称">
             </el-table-column>
             <el-table-column
@@ -339,7 +339,8 @@
                 data.password = this.addAccountForm.password;
                 data.name = this.addAccountForm.name;
                 data.mobile = this.addAccountForm.mobile;
-                // console.log(data);
+                //console.log(data);
+                //return false;
                 this.$refs['addAccountForm'].validate((valid) => {
                     if (valid) {
                         // console.log(1);
@@ -357,6 +358,7 @@
                                     message: '操作有误'
                                 });
                             }
+                            this.addAccountForm = {};
                             this.dialogAddAccountForm = false;
                             this.requestData();
                         });
@@ -464,7 +466,7 @@
                             this.requestData();
                         })
                     } else {
-                        console.log(2);
+                        // console.log(2);
                         return false;
                     }
                 });

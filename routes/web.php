@@ -17,7 +17,12 @@ Route::get('/', function () {
 });
 
 Route::get('/test1', function () {
-    dd(config('mojito.super_admin.auth'));
+    $account = \App\Models\AccountSubset::find(1);
+    $company = $account->company;
+    dd(count($company->AccountSubset));
+    $company = $account->company;
+    dd(count($company->accountSubset));
+    dd(count($company->account_subset));
 });
 
 Route::get('/test', 'member\CompanyAccountController@index');

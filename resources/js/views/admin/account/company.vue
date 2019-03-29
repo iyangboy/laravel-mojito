@@ -2,7 +2,7 @@
     <div>
         <el-form :inline="true" :model="queryParams" size="mini">
             <el-form-item :label="$t('name')">
-                <el-input v-model="queryParams.company"></el-input>
+                <el-input v-model="queryParams.company_name"></el-input>
             </el-form-item>
             <el-form-item :label="$t('email')">
                 <el-input v-model="queryParams.email"></el-input>

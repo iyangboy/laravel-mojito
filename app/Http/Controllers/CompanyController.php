@@ -11,7 +11,17 @@ class CompanyController extends Controller
 {
     public function index(Request $request, Company $company)
     {
-        $company_data = $company::query()->where(request_intersect(['permission_name', 'email']))->paginate(20);
+        $company = $company::query();
+        if ($search = $request->input('company_name', '')) {
+            $like = '%' . $search . '%';
+            $company->where('company_name', 'like', $like);
+        }
+        if ($request->input('email', '')) {
+            $search = $request->input('email', '');
+            $like = '%' . $search . '%';
+            $company->where('email', 'like', $like);
+        }
+        $company_data = $company->paginate(10);
         return $company_data;
     }
 

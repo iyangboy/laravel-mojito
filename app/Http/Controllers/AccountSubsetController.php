@@ -4,27 +4,38 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\AccountSubset;
+use App\Models\Company;
 use Illuminate\Http\Request;
+use Hash;
 
 class AccountSubsetController extends Controller
 {
     public function index(Request $request)
     {
         $subset = AccountSubset::query();
-        $accounts = $subset->with(['company'])->paginate(20);
+        $accounts = $subset->with(['company_name'])->paginate(10);
         return $accounts;
     }
 
     public function companySubset(Request $request, $company_id)
     {
-        $subset = AccountSubset::query()->with(['company'])->where('company_id', $company_id)->paginate(20);
+        $subset = AccountSubset::query()->with(['company'])->where('company_id', $company_id)->paginate(10);
         return $subset;
     }
 
     // 创建子账户
     public function store(Request $request)
     {
-        $account = AccountSubset::create($request->all());
+        $data = $request->all();
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }
+        $account = AccountSubset::create($data);
+
+        $company = $account->company;
+        $company->sub_account_num = count($company->accountSubset);
+        $company->save();
+
         return $account->id;
     }
 
@@ -32,7 +43,11 @@ class AccountSubsetController extends Controller
     public function update(Request $request, $id)
     {
         $account = AccountSubset::find($id);
-        $account->update($request->all());
+        $data = $request->all();
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }
+        $account->update($data);
         return $account->id;
     }
 
@@ -40,8 +55,12 @@ class AccountSubsetController extends Controller
     public function destroy($id)
     {
         $account = AccountSubset::find($id);
-
         $account->delete();
+
+        // 子账号计数
+        $company = $account->company;;
+        $company->sub_account_num = count($company->accountSubset);
+        $company->save();
 
         return $account->id;
     }
@@ -52,7 +71,7 @@ class AccountSubsetController extends Controller
         $id = $request->id;
         $password = $request->password;
         $account = AccountSubset::find($id);
-        if ($password == $account->password) {
+        if (Hash::check($password, $account->password)) {
             return 1;
         }
         return 0;

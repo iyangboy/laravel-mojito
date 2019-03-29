@@ -182,7 +182,8 @@
     import {tableDefaultData} from '../../../libs/tableDataHandle'
 
     export default {
-        name: 'accountManagementIndex',
+        //name: 'accountManagementIndex',
+        name: 'companyAccountSubsetIndex',
         components: {},
         data() {
             let validatePass = (rule, value, callback) => {
@@ -208,6 +209,7 @@
             };
             return {
                 ...tableDefaultData(),
+                companyId: 0,
                 tableListData: [],
                 isCompany: false,
                 // 新建
@@ -287,17 +289,18 @@
         methods: {
             requestData() {
                 this.loading = true;
-                console.log(123);
-                console.log(this.$route.params.id);
-                if (this.$route.params.id) {
+                this.tableListData = [];
+                //console.log(123);
+                //console.log(this.$route.params.id);
+                if (this.companyId) {
                     this.isCompany = true;
-                    getDataCompanyList(this.$route.params.id, {
+                    getDataCompanyList(this.companyId, {
                         ...this.queryParams,
                         page: this.pagination.currentPage
                     }).then(response => {
-                        console.log(response.data);
+                        //console.log(response.data);
                         this.tableListData = response.data.data;
-                        let meta = response.data
+                        let meta = response.data;
                         this.pagination = {
                             currentPage: meta.current_page,
                             pageSize: meta.per_page,
@@ -313,9 +316,9 @@
                         ...this.queryParams,
                         page: this.pagination.currentPage
                     }).then(response => {
-                        console.log(response.data);
+                        //console.log(response.data);
                         this.tableListData = response.data.data;
-                        let meta = response.data
+                        let meta = response.data;
                         this.pagination = {
                             currentPage: meta.current_page,
                             pageSize: meta.per_page,
@@ -327,12 +330,11 @@
                         this.loading = false
                     })
                 }
-
             },
             // 添加子账户
             addAccount() {
                 let data = {};
-                data.company_id = this.$route.params.id;
+                data.company_id = this.companyId;
                 data.email = this.addAccountForm.email;
                 data.password = this.addAccountForm.password;
                 data.name = this.addAccountForm.name;
@@ -500,12 +502,36 @@
             }
         },
         computed: {},
+        watch: {
+            $route(route) {
+                if (route.name === 'accountSubsetIndex') {
+                    this.requestData()
+                }
+            }
+        },
         created() {
-            console.log(111);
+            console.log(this.$route);
+            if (this.$route.query.company_id) {
+                this.companyId = this.$route.query.company_id;
+            } else if (this.$route.params.id) {
+                this.companyId = this.$route.params.id;
+            } else {
+                this.companyId = 0;
+            }
+            console.log(this.companyId);
             this.requestData()
         },
-        activated() {
-            //this.requestData()
+        activated: function () {
+            console.log(this.$route);
+            if (this.$route.query.company_id) {
+                this.companyId = this.$route.query.company_id;
+            } else if (this.$route.params.id) {
+                this.companyId = this.$route.params.id;
+            } else {
+                this.companyId = 0;
+            }
+            console.log(this.companyId);
+            this.requestData()
         }
     }
 </script>

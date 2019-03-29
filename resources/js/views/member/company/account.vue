@@ -172,13 +172,11 @@
 
 <script>
     import {
-        deleteAccount,
-    } from '../../../api/account/subset'
-    import {
         getDataList,
         postAddAccount,
         editAccountData,
         getPasswordValidate,
+        deleteAccount,
     } from '../../../api/member/company/account'
     import {tableDefaultData} from '../../../libs/tableDataHandle'
 

@@ -212,6 +212,18 @@ export default [
                 },
                 component: resolve => void (require(['../views/member/company/account.vue'], resolve))
             },
+            // 充值发票
+            {
+                name: 'CompanyInvoiceIndex',
+                path: 'invoice',
+                meta: {
+                    provider: 'member',
+                    title: 'CompanyInvoiceIndex',
+                    cache: true,
+                    permission: 'invoice.index'
+                },
+                component: resolve => void (require(['../views/member/company/invoice.vue'], resolve))
+            }
         ]
     },
     {

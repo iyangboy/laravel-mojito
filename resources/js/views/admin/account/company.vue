@@ -70,6 +70,11 @@
                             size="mini">账户
                         </el-button>
                     </router-link>
+                    <router-link :to="{ name: 'accountSubsetIndex', query: {company_id: scope.row.id}}">
+                        <el-button size="mini">
+                            账户信息
+                        </el-button>
+                    </router-link>
                     <el-button
                         size="mini"
                         @click="handleEdit(scope.$index, scope.row)">编辑
@@ -225,6 +230,11 @@
                         <el-input v-model="addAccountForm.email" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
+                <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input type="password" v-model="addAccountForm.password" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
                 <el-form-item label="企业名称" prop="company" :label-width="formLabelWidth">
                     <el-col :span="12">
                         <el-input v-model="addAccountForm.company" placeholder="请输入"></el-input>
@@ -325,10 +335,42 @@
                 <el-button type="primary" @click="editCompany">{{ $t('confirm') }}</el-button>
             </div>
         </el-dialog>
+
+        <el-dialog title="添加子账号" :visible.sync="dialogAddSubsetForm" width="30%">
+            <el-form :model="addSubsetForm" :rules="addSubsetFormRules" ref="addSubsetForm">
+                <el-form-item label="账号邮箱" prop="email" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addSubsetForm.email" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input type="password" v-model="addSubsetForm.password" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="使用者" prop="name" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addSubsetForm.name" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="联系方式" prop="mobile" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="addSubsetForm.mobile" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogAddSubsetForm = false">{{ $t('cancel') }}</el-button>
+                <el-button type="primary" @click="addAccountSubset">{{ $t('confirm') }}</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import {
+        postAddAccount,
+    } from '../../../api/account/subset'
     import {
         getDataList,
         editAccount,
@@ -348,15 +390,38 @@
             tableListData: [],
             showEdit: {},
             showOperation: {},
+            // 添加子账户
             dialogAddSubsetForm: false,
-            addSubset: {
-
+            addSubsetForm: {
+                email: '',
+                password: '',
+                name: '',
+                mobile: '',
             },
+            addSubsetFormRules: {
+                email: [
+                    {required: true, message: '邮箱不能为空'},
+                    {type: 'email', message: '请输入正确的邮箱'}
+                ],
+                password: [
+                    {required: true, message: '密码不能为空'},
+                    {min: 6, max: 32, message: '字符6~32'}
+                ],
+                name: [
+                    {required: true, message: '使用者名称不能为空'},
+                    {min: 3, max: 255, message: '字符3~255'}
+                ],
+                mobile: [
+                    {required: true, message: '手机号不能为空'}
+                ],
+            },
+            // 编辑
             dialogEdit: false,
             editCompanyForm: {
                 formal: false,
                 name: '',
                 email: '',
+                password: '',
                 company: '',
                 phone: '',
                 trial_at: '',
@@ -369,6 +434,10 @@
                 email: [
                     {required: true, message: '邮箱不能为空'},
                     {type: 'email', message: '请输入正确的邮箱'}
+                ],
+                password: [
+                    {required: true, message: '密码不能为空'},
+                    {min: 3, max: 255, message: '字符6~32'}
                 ],
                 company: [
                     {required: true, message: '企业名称不能为空'},
@@ -462,6 +531,45 @@
                 this.nowRowData = {index, row};
                 this.showEdit = row;
                 this.dialogAddSubsetForm = true
+                //console.log(this.nowRowData);
+            },
+            addAccountSubset() {
+                let data = {};
+                data.company_id = this.nowRowData.row.id;
+                data.email = this.addSubsetForm.email;
+                data.password = this.addSubsetForm.password;
+                data.name = this.addSubsetForm.name;
+                data.mobile = this.addSubsetForm.mobile;
+                //console.log(data);
+                this.$refs['addSubsetForm'].validate((valid) => {
+                    if (valid) {
+                        //return false;
+                        // console.log(1);
+                        postAddAccount(data).then(response => {
+                            console.log(response);
+                            if (response.data) {
+                                this.$notify({
+                                    title: '成功',
+                                    message: '创建成功',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.$notify.error({
+                                    title: '错误',
+                                    message: '操作有误'
+                                });
+                            }
+                            this.dialogAddSubsetForm = false;
+                            this.requestData();
+                        });
+                    } else {
+                        //console.log(2)
+                        this.$notify.error({
+                            title: '错误',
+                            message: '请正确提交数据'
+                        });
+                    }
+                });
             },
             // 编辑
             handleEdit(index, row) {

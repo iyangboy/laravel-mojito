@@ -20,7 +20,7 @@
             border stripe
             class="init_table">
             <el-table-column
-                prop="company"
+                prop="company_name"
                 label="企业名称">
             </el-table-column>
             <el-table-column
@@ -200,7 +200,7 @@
             </div>
         </el-dialog>
 
-        <el-dialog title="新建企业账号" :visible.sync="dialogAddAccountFormVisible" width="30%">
+        <el-dialog title="新建企业账号" :visible.sync="dialogAddAccountFormVisible" width="40%">
             <el-form :model="addAccountForm" :rules="addAccountRules" ref="addAccountForm">
                 <el-form-item label="状态" prop="formal" :label-width="formLabelWidth">
                     <el-switch
@@ -211,7 +211,7 @@
                         inactive-text="试用账号">
                     </el-switch>
                 </el-form-item>
-                <el-form-item label="试用期限" prop="trial_at" :label-width="formLabelWidth">
+                <el-form-item v-if="!addAccountForm.formal" label="试用期限" prop="trial_at" :label-width="formLabelWidth">
                     <el-date-picker
                         v-model="addAccountForm.trial_at"
                         type="date"
@@ -220,34 +220,27 @@
                         placeholder="选择日期">
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item label="账号昵称" prop="name" :label-width="formLabelWidth">
-                    <el-col :span="12">
-                        <el-input v-model="addAccountForm.name" placeholder="请输入"></el-input>
-                    </el-col>
-                </el-form-item>
                 <el-form-item label="账号邮箱" prop="email" :label-width="formLabelWidth">
-                    <el-col :span="12">
+                    <el-col :span="16">
                         <el-input v-model="addAccountForm.email" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
-                    <el-col :span="12">
+                <el-form-item label="账号密码" prop="password" :label-width="formLabelWidth">
+                    <el-col :span="16">
                         <el-input type="password" v-model="addAccountForm.password" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="企业名称" prop="company" :label-width="formLabelWidth">
-                    <el-col :span="12">
-                        <el-input v-model="addAccountForm.company" placeholder="请输入"></el-input>
+                <el-form-item label="企业名称" prop="company_name" :label-width="formLabelWidth">
+                    <el-col :span="16">
+                        <el-input v-model="addAccountForm.company_name" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="联系方式" prop="phone" :label-width="formLabelWidth">
-                    <el-col :span="12">
+                    <el-col :span="16">
                         <el-input v-model="addAccountForm.phone" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-row>
-
-                </el-row>
+                <el-row></el-row>
                 <div v-for="(account, index) in addAccountForm.accounts">
                     <el-row :gutter="20" style="border: 1px solid #eee; margin-bottom: 10px;">
                         <el-col :span="10">
@@ -305,7 +298,7 @@
                         inactive-text="试用账号">
                     </el-switch>
                 </el-form-item>
-                <el-form-item label="试用期限" prop="trial_at" :label-width="formLabelWidth">
+                <el-form-item v-if="!editCompanyForm.formal" label="试用期限" prop="trial_at" :label-width="formLabelWidth">
                     <el-date-picker
                         v-model="editCompanyForm.trial_at"
                         type="date"
@@ -319,9 +312,19 @@
                         <el-input v-model="editCompanyForm.email" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="企业名称" prop="company" :label-width="formLabelWidth">
+                <el-form-item label="密码" :label-width="formLabelWidth">
                     <el-col :span="12">
-                        <el-input v-model="editCompanyForm.company" placeholder="请输入"></el-input>
+                        <el-button type="warning" plain @click="showNewPassword" size="mini">重置密码</el-button>
+                    </el-col>
+                </el-form-item>
+                <el-form-item v-if="newPassword" label="新密码" prop="password" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input type="password" v-model="editCompanyForm.password" placeholder="请输入"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="企业名称" prop="company_name" :label-width="formLabelWidth">
+                    <el-col :span="12">
+                        <el-input v-model="editCompanyForm.company_name" placeholder="请输入"></el-input>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="联系方式" prop="mobile" :label-width="formLabelWidth">
@@ -417,12 +420,13 @@
             },
             // 编辑
             dialogEdit: false,
+            newPassword: false,
             editCompanyForm: {
                 formal: false,
                 name: '',
                 email: '',
                 password: '',
-                company: '',
+                company_name: '',
                 phone: '',
                 trial_at: '',
             },
@@ -439,7 +443,7 @@
                     {required: true, message: '密码不能为空'},
                     {min: 3, max: 255, message: '字符6~32'}
                 ],
-                company: [
+                company_name: [
                     {required: true, message: '企业名称不能为空'},
                     {min: 3, max: 255, message: '字符3~255'}
                 ],
@@ -471,9 +475,9 @@
             },
             addAccountForm: {
                 formal: false,
-                name: '',
                 email: '',
-                company: '',
+                company_name: '',
+                password: '',
                 phone: '',
                 trial_at: '',
                 accounts: [
@@ -481,15 +485,15 @@
                 ],
             },
             addAccountRules: {
-                name: [
-                    {required: true, message: '昵称不能为空'},
-                    {min: 3, max: 255, message: '字符3~255'}
-                ],
                 email: [
                     {required: true, message: '邮箱不能为空'},
                     {type: 'email', message: '请输入正确的邮箱'}
                 ],
-                company: [
+                password: [
+                    {required: true, message: '密码不能为空'},
+                    {min: 3, max: 255, message: '字符6~32'}
+                ],
+                company_name: [
                     {required: true, message: '企业名称不能为空'},
                     {min: 3, max: 255, message: '字符3~255'}
                 ],
@@ -581,21 +585,37 @@
                 this.editCompanyForm.formal = Boolean(row.formal);
                 this.dialogEdit = true
             },
+            showNewPassword() {
+                this.editCompanyForm.password = '';
+                this.newPassword = !this.newPassword;
+            },
             editCompany() {
                 let data = {};
                 //console.log(data);
-                data.company = this.editCompanyForm.company;
+                data.company_name = this.editCompanyForm.company_name;
                 data.email = this.editCompanyForm.email;
                 data.mobile = this.editCompanyForm.mobile;
                 data.trial_at = this.editCompanyForm.trial_at;
-                console.log(this.editCompanyForm.formal);
+                // console.log(this.editCompanyForm.formal);
                 data.formal = this.editCompanyForm.formal ? 1 : 0;
-                console.log(data.formal);
+                console.log(data);
+                if (!data.formal && !this.editCompanyForm.trial_at) {
+                    this.$notify.error({
+                        title: '错误',
+                        message: '测试账号需要选择时间'
+                    });
+                    return false;
+                }
+                if (this.newPassword) {
+                    data.password = this.editCompanyForm.password;
+                }
+                // console.log(data.formal);
                 this.$refs['editCompanyForm'].validate((valid) => {
                     if (valid) {
                         //console.log(data);
+                        //return false;
                         editAccount(this.nowRowData.row.id, data).then(response => {
-                            console.log(response);
+                            //console.log(response);
                             let status = response.data;
                             if (status) {
                                 this.$notify({
@@ -725,10 +745,20 @@
             },
             handleAddAdminUser() {
                 // console.log(this.addAccountForm);
+                let data = {...this.addAccountForm};
+                console.log(data);
+                if (!data.formal && !data.trial_at) {
+                    this.$notify.error({
+                        title: '错误',
+                        message: '测试账号需要选择时间'
+                    });
+                    return false;
+                }
+                //return false;
                 this.$refs['addAccountForm'].validate((valid) => {
                     if (valid) {
                         console.log(valid);
-                        addAccount(this.addAccountForm).then(response => {
+                        addAccount(data).then(response => {
                             //console.log(response);
                             let status = response.data;
                             if (status) {

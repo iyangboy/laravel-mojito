@@ -20,7 +20,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::namespace('\App\Http\Controllers')
     ->middleware([config('mojito.super_admin.auth'), 'mojito.permission'])
     ->group(function ($router) {
+        /*
         $router->resource('account_management', 'AccountController', ['only' =>
+            ['index', 'show', 'store', 'update', 'destroy']
+        ]);
+        */
+        $router->resource('account_management', 'CompanyController', ['only' =>
             ['index', 'show', 'store', 'update', 'destroy']
         ]);
         $router->get('account_subset/password_validate', 'AccountSubsetController@passwordValidate');
